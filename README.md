@@ -1,6 +1,6 @@
 # RentEZ - A car renting platform
 
-[live link](asdf);
+[live link](https://rentez-three.vercel.app/);
 
 ## Features
 
