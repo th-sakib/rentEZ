@@ -14,6 +14,13 @@ app.use("/api/v1", userRouter);
 app.use("/api/v1", vehicleRouter);
 app.use("/api/v1", bookingRouter);
 
+app.get("/", (req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    message: "Welcome to rentEZ",
+  });
+});
+
 //global middleware
 app.use((_, res: Response) => {
   res.status(404).json({ status: false, message: "Route not found" });

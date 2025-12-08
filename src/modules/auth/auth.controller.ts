@@ -5,10 +5,12 @@ const registerUser = async (req: Request, res: Response) => {
   try {
     const result = await authService.registerUser(req.body);
 
+    const { updated_at, created_at, ...rest } = result.rows[0];
+
     res.status(201).json({
       success: true,
       message: "User registered successfully",
-      data: result.rows[0],
+      data: rest,
     });
   } catch (error: any) {
     res.status(500).json({
