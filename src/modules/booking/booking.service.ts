@@ -94,31 +94,31 @@ const getBookings = async (role: string, userId: string) => {
     }
 
     // checking the booking date & auto returned if they expires
-    // result.rows.forEach(async (booking) => {
-    //   const endDate = new Date(booking.rent_end_date).getTime();
-    //   if (endDate < Date.now()) {
-    //     const adminUpdate = await pool.query(
-    //       `
-    //         UPDATE bookings
-    //         SET status='returned'
-    //         WHERE id=$1
-    //         RETURNING *
-    //       `,
-    //       [booking.id]
-    //     );
-    //     // update availability
-    //     if (adminUpdate.rows.length) {
-    //       await pool.query(
-    //         `UPDATE vehicles
-    //          SET availability_status='available'
-    //          WHERE id=$1
-    //          RETURNING *
-    //         `,
-    //         [adminUpdate.rows[0].vehicle_id]
-    //       );
-    //     }
-    //   }
-    // });
+    result.rows.forEach(async (booking) => {
+      const endDate = new Date(booking.rent_end_date).getTime();
+      if (endDate < Date.now()) {
+        const adminUpdate = await pool.query(
+          `
+            UPDATE bookings
+            SET status='returned'
+            WHERE id=$1
+            RETURNING *
+          `,
+          [booking.id]
+        );
+        // update availability
+        if (adminUpdate.rows.length) {
+          await pool.query(
+            `UPDATE vehicles
+             SET availability_status='available'
+             WHERE id=$1
+             RETURNING *
+            `,
+            [adminUpdate.rows[0].vehicle_id]
+          );
+        }
+      }
+    });
 
     return result;
   }
