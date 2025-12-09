@@ -22,6 +22,12 @@ const createBooking = async (payload: Record<string, unknown>) => {
   const startDate = new Date(rent_start_date as Date);
   const endDate = new Date(rent_end_date as Date);
 
+  // restricting past dates | we are not time travellers
+  if (startDate.getTime() < Date.now() || endDate.getTime() < Date.now()) {
+    throw new Error("Date can't be from the past.");
+  }
+
+  // endDate and startDate validation
   if (endDate < startDate) {
     throw new Error("end date cannot be before start date");
   }
@@ -79,13 +85,40 @@ const getBookings = async (role: string, userId: string) => {
             'registration_number', v.registration_number
         ) AS vehicle
         FROM bookings b
-        JOIN users c ON b.customer_id = c.id
-        JOIN vehicles v ON b.vehicle_id = v.id
+        LEFT JOIN users c ON b.customer_id = c.id
+        LEFT JOIN vehicles v ON b.vehicle_id = v.id
         `
     );
     if (result.rows.length === 0) {
       throw new Error("Bookings retrieve failed");
     }
+
+    // checking the booking date & auto returned if they expires
+    // result.rows.forEach(async (booking) => {
+    //   const endDate = new Date(booking.rent_end_date).getTime();
+    //   if (endDate < Date.now()) {
+    //     const adminUpdate = await pool.query(
+    //       `
+    //         UPDATE bookings
+    //         SET status='returned'
+    //         WHERE id=$1
+    //         RETURNING *
+    //       `,
+    //       [booking.id]
+    //     );
+    //     // update availability
+    //     if (adminUpdate.rows.length) {
+    //       await pool.query(
+    //         `UPDATE vehicles
+    //          SET availability_status='available'
+    //          WHERE id=$1
+    //          RETURNING *
+    //         `,
+    //         [adminUpdate.rows[0].vehicle_id]
+    //       );
+    //     }
+    //   }
+    // });
 
     return result;
   }

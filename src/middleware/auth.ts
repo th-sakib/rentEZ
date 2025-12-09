@@ -24,7 +24,6 @@ const auth = (...roles: ("admin" | "customer")[]) => {
       }
 
       req.user = decodedPayload;
-      console.log("user current", req.user);
 
       if (roles.length && !roles.includes(decodedPayload.role)) {
         throw new Error("Unauthorized!");
